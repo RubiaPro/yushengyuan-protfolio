@@ -23,6 +23,28 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Mirror media into the Pages artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          media_origin="https://yushengyuan-portfolio.yurubia9.chatgpt.site"
+          media_files=(
+            wise-hero.webp
+            wise-closeup.webp
+            wise-remote.webp
+            index-orbit.webp
+            index-approach.webp
+            index-contact.webp
+            hero-loop-v3.mp4
+            contact-entry-v2.mp4
+            contact-reverse-v2.mp4
+          )
+          for media_file in "${media_files[@]}"; do
+            curl --fail --location --retry 5 --retry-all-errors \
+              "${media_origin}/${media_file}" \
+              --output "${media_file}"
+          done
+          sed -i "s|${media_origin}/||g" index.html
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
